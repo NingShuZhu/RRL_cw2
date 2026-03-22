@@ -217,8 +217,10 @@ def compute_ratio(new_logprob: torch.Tensor, old_logprob: torch.Tensor) -> tuple
         logratio : log π_θ − log π_old,  shape (minibatch,)
         ratio    : exp(logratio),         shape (minibatch,)
     """
-    
-    raise NotImplementedError
+    logratio = new_logprob - old_logprob
+    ratio = torch.exp(logratio)
+
+    # raise NotImplementedError
     return logratio, ratio
 
 
@@ -237,8 +239,11 @@ def compute_policy_loss(ratio: torch.Tensor, advantages: torch.Tensor, clip_coef
     Tip:
         You can use torch.clamp to performing the PPO clipping
     """
+    unclipped = ratio * advantages
+    clipped = torch.clamp(ratio, 1 - clip_coef, 1 + clip_coef) * advantages
+    policy_loss = -torch.mean(torch.min(unclipped, clipped))
     
-    raise NotImplementedError
+    # raise NotImplementedError
     return policy_loss 
 
 
@@ -252,8 +257,9 @@ def compute_value_loss(new_values: torch.Tensor, returns: torch.Tensor) -> torch
     Returns:
         Scalar loss tensor.
     """
+    v_loss = ((new_values - returns) ** 2).mean()
    
-    raise NotImplementedError
+    # raise NotImplementedError
     return v_loss
 
 
@@ -305,8 +311,11 @@ def compute_gae(
             nextvalues = values[t + 1]
 
         # TODO: compute the 1-step TD error δ_t and the GAE advantage A_t.
+        delta = rewards[t] + gamma * nextvalues * nextnonterminal - values[t]
         
-        raise NotImplementedError # comment or delete this out once implemented
+        lastgaelam = delta + gamma * gae_lambda * nextnonterminal * lastgaelam
+        advantages[t] = lastgaelam
+        # raise NotImplementedError # comment or delete this out once implemented
 
     returns = advantages + values
     return advantages, returns
