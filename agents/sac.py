@@ -384,7 +384,7 @@ class Actor(nn.Module):
 
 # ── You Must implement these functions ────────────────────────────────────────
 
-
+# used for Q-Networks' learning
 def compute_q_target(
     rewards: torch.Tensor,
     dones: torch.Tensor,
@@ -402,7 +402,8 @@ def compute_q_target(
     Returns:
         Scalar-equivalent 1-D target tensor, shape (batch,).
     """
-    raise NotImplementedError
+    # raise NotImplementedError
+    q_target = rewards + gamma * (1 - dones) * min_qf_next_target
     return q_target
 
 def compute_actor_loss(
@@ -423,10 +424,12 @@ def compute_actor_loss(
     Returns:
         Scalar loss tensor.
     """
-    raise NotImplementedError
+    # raise NotImplementedError
+    actor_loss = (alpha * log_pi - min_qf_pi).mean()
     return actor_loss
 
 
+# alpha = exp(log_alpha) > 0 => automatically ensure alpha is positive
 def compute_alpha_loss(
     log_alpha: torch.Tensor,
     log_pi: torch.Tensor,
@@ -442,7 +445,14 @@ def compute_alpha_loss(
     Returns:
         Scalar loss tensor.
     """
-    raise NotImplementedError
+    # original version
+    # alpha = log_alpha.exp()
+    # loss = alpha * (-log_pi - target_entropy)
+
+    # omit exp(), as the gradient of log_alpha is the same as that of alpha up to a positive scaling factor, so it won't change the optimization direction
+    alpha_loss = -(log_alpha * (log_pi + target_entropy).detach()).mean() 
+    # detach: don't backprop to parameters in log_pi, just treat it as a constant in the optimization of log_alpha
+    # raise NotImplementedError
     return alpha_loss
 
 
@@ -461,7 +471,12 @@ def soft_update(net: nn.Module, target_net: nn.Module, tau: float) -> None:
     Tip:
         You can use use params.data.copy_ to do this see for example: https://docs.pytorch.org/docs/stable/generated/torch.Tensor.copy_.html
     """
-    raise NotImplementedError # Remove once implemented
+
+    for param, target_param in zip(net.parameters(), target_net.parameters()):
+        # copy_() performs in-place update of target_param.data with the new value computed by the soft update formula
+        target_param.data.copy_(tau * param.data + (1 - tau) * target_param.data)
+
+    # raise NotImplementedError # Remove once implemented
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -604,6 +619,7 @@ if __name__ == "__main__":
 
             if global_step % 100 == 0:
                 print("SPS:", int(global_step / (time.time() - start_time)))
+                # replay buffer gets larger, so SPS decreases over the episodes
 
     envs.close()
     np.save(os.path.join(run_dir, "returns.npy"), np.array(returns_log))
