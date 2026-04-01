@@ -7,7 +7,7 @@ from collections import defaultdict
 
 # ====== 配置 ======
 OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
-SAVE_DIR = "plot/grid-search-grouped"
+SAVE_DIR = "HalfCheetah_plots/ppo/grid-search-grouped"
 SMOOTHING = 0.9
 
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -49,6 +49,11 @@ def load_all_runs():
         steps = data[:, 0]
         returns = _ema_smooth(data[:, 1], SMOOTHING)
 
+        # 2. interpolation
+        dense_steps = np.linspace(steps.min(), steps.max(), 300)
+        returns = np.interp(dense_steps, steps, returns)
+        steps = dense_steps
+
         runs.append({
             "clip": clip,
             "epoch": epoch,
@@ -79,7 +84,7 @@ def plot_group_by_clip(runs):
         ax.set_xlabel("Environment Steps")
         ax.set_ylabel("Episodic Return")
         ax.set_title(f"PPO — clip-coef={clip} (varying update-epochs)")
-        ax.set_ylim(-500, 3100)
+        ax.set_ylim(-500, 3200)
         ax.legend()
         ax.grid(True, linestyle="--", alpha=0.4)
 
@@ -112,7 +117,8 @@ def plot_group_by_epoch(runs):
         ax.set_xlabel("Environment Steps")
         ax.set_ylabel("Episodic Return")
         ax.set_title(f"PPO — update-epochs={epoch} (varying clip-coef)")
-        ax.set_ylim(-500, 3100)
+        # ax.set_ylim(-500, 2000)
+        ax.set_ylim(-500, 3200)
         ax.legend()
         ax.grid(True, linestyle="--", alpha=0.4)
 

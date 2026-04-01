@@ -1,1 +1,4 @@
 num-epochs=15时，clip-coef的效果与其他相反，越小，振荡越大
+
+python agents/sac.py --env-id="Ant-v4" --tau=0.001 
+python agents/sac.py -env-id="Ant-v4" --tau=0.001 --batch-size=64 && python agents/sac.py -env-id="Ant-v4" --tau=0.001 --batch-size=512 && python agents/sac.py -env-id="Ant-v4" --tau=0.005 --batch-size=64 && python agents/sac.py -env-id="Ant-v4" --tau=0.005 --batch-size=512 && python agents/sac.py -env-id="Ant-v4" --tau=0.01 --batch-size=64 && python agents/sac.py -env-id="Ant-v4" --tau=0.01 && python agents/sac.py -env-id="Ant-v4" --tau=0.01 --batch-size=512
