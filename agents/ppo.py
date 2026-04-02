@@ -36,7 +36,7 @@ class Args:
     env_id: str = "HalfCheetah-v4"
     """Gymnasium environment ID to train on."""
     # ── Rollout collection ─────────────────────────────────────────────────
-    total_timesteps: int = 1_000_000
+    total_timesteps: int = 2_000_000
     """Total environment steps across the whole training run."""
     num_steps: int = 2048
     """Steps collected per rollout before each policy update.

@@ -6,9 +6,10 @@ from collections import defaultdict
 
 
 # ====== 配置 ======
-# OUTPUT_DIR = "output/Ant-v4/sac"
-OUTPUT_DIR = "output/HalfCheetah-v4/sac"
-SAVE_DIR = "HalfCheetah_plots/sac/grid-search-grouped"
+OUTPUT_DIR = "output/Ant-v4/sac"
+# OUTPUT_DIR = "output/HalfCheetah-v4/sac"
+# SAVE_DIR = "HalfCheetah_plots/sac/grid-search-grouped"
+SAVE_DIR = "Ant_plots/sac/grid-search-grouped"
 SMOOTHING = 0.9
 
 os.makedirs(SAVE_DIR, exist_ok=True)
@@ -103,7 +104,7 @@ def plot_group_by_tau(runs):
         ax.set_xlabel("Environment Steps")
         ax.set_ylabel("Episodic Return")
         ax.set_title(f"SAC — tau={tau} (varying batch-size)")
-        ax.set_ylim(-500, 12000)
+        ax.set_ylim(-500, 4500)
         ax.legend()
         ax.grid(True, linestyle="--", alpha=0.4)
 
@@ -135,7 +136,7 @@ def plot_group_by_batch_size(runs):
         ax.set_xlabel("Environment Steps")
         ax.set_ylabel("Episodic Return")
         ax.set_title(f"SAC — batch-size={batch_size} (varying tau)")
-        ax.set_ylim(-500, 12000)
+        ax.set_ylim(-500, 4500)
         ax.legend()
         ax.grid(True, linestyle="--", alpha=0.4)
 

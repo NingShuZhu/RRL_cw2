@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 # ====== 配置 ======
 # OUTPUT_DIR = "output/Ant-v4/ppo"
 # OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
-OUTPUT_DIR = "output/HalfCheetah-v4/sac"
-SAVE_DIR = "HalfCheetah_plots/sac/grid-search"
+OUTPUT_DIR = "output/Ant-v4/sac"
+SAVE_DIR = "Ant_plots/sac/grid-search"
 SMOOTHING = 0.9  # ⚠️ EMA建议用0~1
 
 
