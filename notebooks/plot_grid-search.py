@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 
 # ====== 配置 ======
 # OUTPUT_DIR = "output/Ant-v4/ppo"
-# OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
-OUTPUT_DIR = "output/Ant-v4/sac"
-SAVE_DIR = "Ant_plots/sac/grid-search"
+OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
+# OUTPUT_DIR = "output/Ant-v4/sac"
+# SAVE_DIR = "Ant_plots/sac/grid-search"
+SAVE_DIR = "HalfCheetah_plots/ppo/grid-search"
 SMOOTHING = 0.9  # ⚠️ EMA建议用0~1
 
 
@@ -38,11 +39,11 @@ def plot_single_run(run_dir, smoothing=0.0):
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
 
-    # clip_coef = config.get("clip_coef")
-    # update_epochs = config.get("update_epochs")
+    clip_coef = config.get("clip_coef")
+    update_epochs = config.get("update_epochs")
 
-    tau = config.get("tau")
-    batch_size = config.get("batch_size")
+    # tau = config.get("tau")
+    # batch_size = config.get("batch_size")
 
     # data = np.load(returns_path)
     # steps = data[:, 0]
@@ -58,14 +59,14 @@ def plot_single_run(run_dir, smoothing=0.0):
     steps = data[:, 0]
     returns = data[:, 1]
 
-    # ====== 只保留前 400k steps ======
-    mask = steps <= 400000
-    steps = steps[mask]
-    returns = returns[mask]
+    # # ====== 只保留前 400k steps ======
+    # mask = steps <= 400000
+    # steps = steps[mask]
+    # returns = returns[mask]
 
-    # 防止被截成空（保险）
-    if len(steps) == 0:
-        return None
+    # # 防止被截成空（保险）
+    # if len(steps) == 0:
+    #     return None
 
     # 1. smoothing
     returns = _ema_smooth(returns, SMOOTHING)
@@ -80,16 +81,16 @@ def plot_single_run(run_dir, smoothing=0.0):
 
     ax.set_xlabel("Environment Steps")
     ax.set_ylabel("Episodic Return")
-    # ax.set_title(f"PPO — clip-coef={clip_coef} update-epochs={update_epochs}")
-    ax.set_title(f"SAC — tau={tau} batch_size={batch_size}")
+    ax.set_title(f"PPO — clip-coef={clip_coef} update-epochs={update_epochs}")
+    # ax.set_title(f"SAC — tau={tau} batch_size={batch_size}")
     ax.legend()
     ax.grid(True, linestyle="--", alpha=0.4)
 
     plt.tight_layout()
 
     # ====== 保存 ======
-    # filename = f"ppo_clip{clip_coef}_epoch{update_epochs}.png"
-    filename = f"sac_tau{tau}_batch{batch_size}.png"
+    filename = f"ppo_clip{clip_coef}_epoch{update_epochs}.png"
+    # filename = f"sac_tau{tau}_batch{batch_size}.png"
     save_path = os.path.join(SAVE_DIR, filename)
     plt.savefig(save_path, dpi=300)
 
@@ -97,8 +98,8 @@ def plot_single_run(run_dir, smoothing=0.0):
 
     print(f"Saved: {save_path}")
 
-    # return steps, returns, clip_coef, update_epochs
-    return steps, returns, tau, batch_size
+    return steps, returns, clip_coef, update_epochs
+    # return steps, returns, tau, batch_size
 
 
 # ====== 主函数 ======
@@ -120,26 +121,26 @@ def main():
     # 可选：排序（更美观）
     all_runs.sort(key=lambda x: (x[2], x[3]))
 
-    # for steps, returns, clip_coef, update_epochs in all_runs:
-    #     label = f"clip={clip_coef}, epoch={update_epochs}"
-    #     ax.plot(steps, returns, label=label)
-
-    for steps, returns, tau, batch_size in all_runs:
-        label = f"tau={tau}, batch={batch_size}"
+    for steps, returns, clip_coef, update_epochs in all_runs:
+        label = f"clip={clip_coef}, epoch={update_epochs}"
         ax.plot(steps, returns, label=label)
+
+    # for steps, returns, tau, batch_size in all_runs:
+    #     label = f"tau={tau}, batch={batch_size}"
+    #     ax.plot(steps, returns, label=label)
 
     ax.set_xlabel("Environment Steps")
     ax.set_ylabel("Episodic Return")
-    # ax.set_title("PPO Comparison (All Runs)")
-    ax.set_title("SAC Comparison (All Runs)")
+    ax.set_title("PPO Comparison (All Runs)")
+    # ax.set_title("SAC Comparison (All Runs)")
     ax.legend()
     ax.grid(True, linestyle="--", alpha=0.4)
 
     plt.tight_layout()
 
     # ====== 保存总图 ======
-    # save_path = os.path.join(SAVE_DIR, "ppo_all_runs.png")
-    save_path = os.path.join(SAVE_DIR, "sac_all_runs.png")
+    save_path = os.path.join(SAVE_DIR, "ppo_all_runs.png")
+    # save_path = os.path.join(SAVE_DIR, "sac_all_runs.png")
     plt.savefig(save_path, dpi=300)
 
     plt.close()

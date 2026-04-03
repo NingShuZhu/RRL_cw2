@@ -22,3 +22,10 @@ printf "1\n2\n3\n" | xargs -I {} -P 3 python agents/sac.py \
 printf "1\n2\n3\n" | xargs -I {} -P 3 python agents/ppo.py \
     --seed {} \
     --clip-coef=0.1 --update-epochs=15 --final-run
+
+python agents/ppo.py --clip-coef=0.1 --update-epochs=5 && python agents/ppo.py --clip-coef=0.1 --update-epochs=10 && python agents/ppo.py --clip-coef=0.1 --update-epochs=15 && python agents/ppo.py --clip-coef=0.2 --update-epochs=5 && python agents/ppo.py --clip-coef=0.2 --update-epochs=15 && python agents/ppo.py --clip-coef=0.3 --update-epochs=5 && python agents/ppo.py --clip-coef=0.3 --update-epochs=10 && python agents/ppo.py --clip-coef=0.3 --update-epochs=15
+python agents/ppo.py --clip-coef=0.1 --update-epochs=5 && python agents/ppo.py --clip-coef=0.1 --update-epochs=10 && python agents/ppo.py --clip-coef=0.1 --update-epochs=15 && python agents/ppo.py --clip-coef=0.2 --update-epochs=5 && python agents/ppo.py --clip-coef=0.2 --update-epochs=10 && python agents/ppo.py --clip-coef=0.2 --update-epochs=15 && python agents/ppo.py --clip-coef=0.3 --update-epochs=5 && python agents/ppo.py --clip-coef=0.3 --update-epochs=10 && python agents/ppo.py --clip-coef=0.3 --update-epochs=15
+
+printf "1\n2\n3\n" | xargs -I {} -P 3 python agents/ppo.py \
+    --seed {} \
+    --final-run
