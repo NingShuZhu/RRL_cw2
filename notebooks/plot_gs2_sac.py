@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 
-# ====== 配置 ======
 OUTPUT_DIR = "output/Ant-v4/sac"
 # OUTPUT_DIR = "output/HalfCheetah-v4/sac"
 # SAVE_DIR = "HalfCheetah_plots/sac/grid-search-grouped"
@@ -15,7 +14,6 @@ SMOOTHING = 0.9
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
-# ====== EMA smoothing ======
 def _ema_smooth(values, weight):
     if weight == 0:
         return values
@@ -26,7 +24,6 @@ def _ema_smooth(values, weight):
     return np.array(smoothed)
 
 
-# ====== 读取所有 run ======
 def load_all_runs():
     runs = []
 
@@ -58,12 +55,10 @@ def load_all_runs():
         steps = data[:, 0]
         returns = data[:, 1]
 
-        # ====== 只保留前 400k steps ======
         mask = steps <= 400000
         steps = steps[mask]
         returns = returns[mask]
 
-        # 防止被截成空（保险）
         if len(steps) == 0:
             return None
         
@@ -84,7 +79,6 @@ def load_all_runs():
     return runs
 
 
-# ====== 分组1：固定 tau ======
 def plot_group_by_tau(runs):
     grouped = defaultdict(list)
 
@@ -93,7 +87,7 @@ def plot_group_by_tau(runs):
 
     for tau, group in grouped.items():
         if len(group) < 2:
-            continue  # 至少2条线才有意义
+            continue 
 
         fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -117,7 +111,6 @@ def plot_group_by_tau(runs):
         print(f"Saved: {save_path}")
 
 
-# ====== 分组2：固定 batch_size ======
 def plot_group_by_batch_size(runs):
     grouped = defaultdict(list)
 
@@ -149,11 +142,9 @@ def plot_group_by_batch_size(runs):
         print(f"Saved: {save_path}")
 
 
-# ====== 主函数 ======
 def main():
     runs = load_all_runs()
 
-    # 排序（让图更整齐）
     runs.sort(key=lambda x: (x["tau"], x["batch_size"]))
 
     plot_group_by_tau(runs)

@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from collections import defaultdict
 
 
-# ====== 配置 ======
 OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
 SAVE_DIR = "HalfCheetah_plots/ppo/grid-search-grouped"
 SMOOTHING = 0.9
@@ -13,7 +12,6 @@ SMOOTHING = 0.9
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
-# ====== EMA smoothing ======
 def _ema_smooth(values, weight):
     if weight == 0:
         return values
@@ -24,7 +22,6 @@ def _ema_smooth(values, weight):
     return np.array(smoothed)
 
 
-# ====== 读取所有 run ======
 def load_all_runs():
     runs = []
 
@@ -64,7 +61,6 @@ def load_all_runs():
     return runs
 
 
-# ====== 分组1：固定 clip_coef ======
 def plot_group_by_clip(runs):
     grouped = defaultdict(list)
 
@@ -73,7 +69,7 @@ def plot_group_by_clip(runs):
 
     for clip, group in grouped.items():
         if len(group) < 2:
-            continue  # 至少2条线才有意义
+            continue
 
         fig, ax = plt.subplots(figsize=(8, 5))
 
@@ -97,7 +93,6 @@ def plot_group_by_clip(runs):
         print(f"Saved: {save_path}")
 
 
-# ====== 分组2：固定 update_epochs ======
 def plot_group_by_epoch(runs):
     grouped = defaultdict(list)
 
@@ -131,11 +126,9 @@ def plot_group_by_epoch(runs):
         print(f"Saved: {save_path}")
 
 
-# ====== 主函数 ======
 def main():
     runs = load_all_runs()
 
-    # 排序（让图更整齐）
     runs.sort(key=lambda x: (x["clip"], x["epoch"]))
 
     plot_group_by_clip(runs)

@@ -4,20 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# ====== 配置 ======
 # OUTPUT_DIR = "output/Ant-v4/ppo"
 OUTPUT_DIR = "output/HalfCheetah-v4/ppo"
 # OUTPUT_DIR = "output/Ant-v4/sac"
 # SAVE_DIR = "Ant_plots/sac/grid-search"
 SAVE_DIR = "HalfCheetah_plots/ppo/grid-search"
-SMOOTHING = 0.9  # ⚠️ EMA建议用0~1
+SMOOTHING = 0.9
 
 
-# ====== 创建保存目录 ======
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
-# ====== EMA smoothing ======
 def _ema_smooth(values, weight):
     if weight == 0:
         return values
@@ -28,8 +25,7 @@ def _ema_smooth(values, weight):
     return np.array(smoothed)
 
 
-# ====== 单个 run 画图并保存 ======
-def plot_single_run(run_dir, smoothing=0.0):
+def plot_single_run(run_dir):
     config_path = os.path.join(run_dir, "config.yaml")
     returns_path = os.path.join(run_dir, "returns.npy")
 
@@ -59,12 +55,10 @@ def plot_single_run(run_dir, smoothing=0.0):
     steps = data[:, 0]
     returns = data[:, 1]
 
-    # # ====== 只保留前 400k steps ======
     # mask = steps <= 400000
     # steps = steps[mask]
     # returns = returns[mask]
 
-    # # 防止被截成空（保险）
     # if len(steps) == 0:
     #     return None
 
@@ -88,13 +82,13 @@ def plot_single_run(run_dir, smoothing=0.0):
 
     plt.tight_layout()
 
-    # ====== 保存 ======
+
     filename = f"ppo_clip{clip_coef}_epoch{update_epochs}.png"
     # filename = f"sac_tau{tau}_batch{batch_size}.png"
     save_path = os.path.join(SAVE_DIR, filename)
     plt.savefig(save_path, dpi=300)
 
-    plt.close()  # ⚠️ 很重要，防止内存爆
+    plt.close()
 
     print(f"Saved: {save_path}")
 
@@ -102,7 +96,6 @@ def plot_single_run(run_dir, smoothing=0.0):
     # return steps, returns, tau, batch_size
 
 
-# ====== 主函数 ======
 def main():
     all_runs = []
 
@@ -115,10 +108,8 @@ def main():
         if result is not None:
             all_runs.append(result)
 
-    # ====== 合并图 ======
     fig, ax = plt.subplots(figsize=(8, 5))
 
-    # 可选：排序（更美观）
     all_runs.sort(key=lambda x: (x[2], x[3]))
 
     for steps, returns, clip_coef, update_epochs in all_runs:
@@ -138,7 +129,6 @@ def main():
 
     plt.tight_layout()
 
-    # ====== 保存总图 ======
     save_path = os.path.join(SAVE_DIR, "ppo_all_runs.png")
     # save_path = os.path.join(SAVE_DIR, "sac_all_runs.png")
     plt.savefig(save_path, dpi=300)
